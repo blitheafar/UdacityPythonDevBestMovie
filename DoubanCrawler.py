@@ -29,12 +29,13 @@ def getMovieUrl(category, location):
     url = url_front
     return url
 
+
 # 保存所有URL到output.txt
-with open('output.txt','w') as f:
+with open('output.txt', 'w') as f:
     for category in category_list:
         for location in location_list:
-            movie_url=getMovieUrl(category, location)
-            f.write(movie_url+'\n')
+            movie_url = getMovieUrl(category, location)
+            f.write(movie_url + '\n')
             url_list.append(movie_url)
 
 # 任务2: 获取电影页面 HTML
@@ -47,15 +48,21 @@ with open('output.txt','w') as f:
 
 # 任务3: 定义电影类
 # 将电影类变量添加进list
-movie_list=[]
-def Movie(name, rate, location, category, info_link, cover_link):
-    movie_list.append(name)
-    movie_list.append(rate)
-    movie_list.append(location)
-    movie_list.append(category)
-    movie_list.append(info_link)
-    movie_list.append(cover_link)
-    return movie_list
+class Movie(object):
+    """电影类"""
+    # 构造函数
+    def __init__(self, name, rate, location, category, info_link, cover_link):
+        # super(Movie, self).__init__()
+        self.name = name
+        self.rate = rate
+        self.location = location
+        self.category = category
+        self.info_link = info_link
+        self.cover_link = cover_link
+
+    # 显示类变量
+    def displayMovie(self):
+           print self.name
 
 name = "肖申克的救赎"
 rate = 9.6
@@ -65,4 +72,14 @@ info_link = "https://movie.douban.com/subject/1292052/"
 cover_link = "https://img3.doubanio.com/view/movie_poster_cover/lpst/public/p480747492.jpg"
 
 m = Movie(name, rate, location, category, info_link, cover_link)
-print(str(m).decode("string_escape"))
+m.displayMovie()
+# print(str(m).decode("string_escape"))
+
+
+# 任务4: 获得豆瓣电影的信息
+"""
+return a list of Movie objects with the given category and location.
+"""
+def getMovies(category, location):
+
+	return []

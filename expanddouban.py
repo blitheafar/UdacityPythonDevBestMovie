@@ -1,3 +1,10 @@
+# coding: utf-8
+import sys
+
+reload(sys)
+# 设置python默认编码为utf-8，防止中文写入乱码
+sys.setdefaultencoding('utf8')
+
 from selenium import webdriver
 import time
 

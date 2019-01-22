@@ -1,6 +1,7 @@
 # coding: utf-8
 import codecs
 import sys
+import expanddouban
 
 reload(sys)
 # 设置python默认编码为utf-8，防止中文写入乱码
@@ -35,3 +36,11 @@ with open('output.txt','w') as f:
             movie_url=getMovieUrl(category, location)
             f.write(movie_url+'\n')
             url_list.append(movie_url)
+
+# 任务2: 获取电影页面 HTML
+# 保存第一个html到movies.csv
+with open('movies.csv','w') as f:
+    for url in url_list:
+        html = expanddouban.getHtml(url,True)
+        f.write(html)
+        break

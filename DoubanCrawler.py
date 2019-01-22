@@ -39,8 +39,30 @@ with open('output.txt','w') as f:
 
 # 任务2: 获取电影页面 HTML
 # 保存第一个html到movies.csv
-with open('movies.csv','w') as f:
-    for url in url_list:
-        html = expanddouban.getHtml(url,True)
-        f.write(html)
-        break
+# with open('movies.csv','w') as f:
+#     for url in url_list:
+#         html = expanddouban.getHtml(url,True)
+#         f.write(html)
+#         break
+
+# 任务3: 定义电影类
+# 将电影类变量添加进list
+movie_list=[]
+def Movie(name, rate, location, category, info_link, cover_link):
+    movie_list.append(name)
+    movie_list.append(rate)
+    movie_list.append(location)
+    movie_list.append(category)
+    movie_list.append(info_link)
+    movie_list.append(cover_link)
+    return movie_list
+
+name = "肖申克的救赎"
+rate = 9.6
+location = "美国"
+category = "剧情"
+info_link = "https://movie.douban.com/subject/1292052/"
+cover_link = "https://img3.doubanio.com/view/movie_poster_cover/lpst/public/p480747492.jpg"
+
+m = Movie(name, rate, location, category, info_link, cover_link)
+print(str(m).decode("string_escape"))

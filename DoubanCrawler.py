@@ -49,8 +49,6 @@ def getHtml(url):
 
 # 任务3: 定义电影类
 # 将电影类变量添加进list
-
-
 class Movie(object):
     """电影类"""
     # 构造函数
@@ -98,8 +96,6 @@ def getMovies(category, location):
 
     # 遍历获取直接子元素
     for ele in content_div.find_all("a", recursive=False):
-        # 一个电影对应一个字典对象，初始化字典对象
-        movie_dic = {}
         info_link = ele.get("href")
 
         if ele.find("p", recursive=False):
@@ -111,13 +107,7 @@ def getMovies(category, location):
             ele_cover = ele.find(class_="cover-wp")
             cover_link = ele_cover.find(class_="pic").find("img").get("src")
 
-        movie_dic["name"] = name
-        movie_dic["rate"] = rate
-        movie_dic["location"] = location
-        movie_dic["category"] = category
-        movie_dic["info_link"] = info_link
-        movie_dic["cover_link"] = cover_link
-        movies_list.append(movie_dic)
+        movies_list.append('{},{},{},{},{},{}'.format(name,rate,location,category,info_link,cover_link))
 
 # 生成一组list包含电影对象
 # 任务5: 构造电影信息数据表,
@@ -135,4 +125,10 @@ for category_item in favorite_category_list:
 # 遍历movies_list，保存电影字典到movies.csv
 with open('movies.csv', 'w') as f:
     for list_item in movies_list:
-        f.write(json.dumps(list_item, encoding="UTF-8", ensure_ascii=False) + '\n')
+        f.write(json.dumps(list_item, encoding="UTF-8", ensure_ascii=False)[1:-1] + '\n')
+
+# 任务6: 统计电影数据,结果输出文件到output.txt
+"""
+统计你所选取的每个电影类别中，数量排名前三的地区有哪些，分别占此类别电影总数的百分比为多少？
+你可能需要自己把这个任务拆分成多个步骤，统计每个类别的电影个数，统计每个类别每个地区的电影个数，排序找到最大值
+"""

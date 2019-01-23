@@ -19,8 +19,6 @@ location_list = ['中国大陆', '美国', '香港', '台湾', '日本', '韩国
 # URL list
 url_list = []
 # 实现函数构造对应类型和地区的URL地址
-
-
 def getMovieUrl(category, location):
     url = None
     url_front = "https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影"
@@ -39,12 +37,9 @@ with open('output.txt', 'w') as f:
             url_list.append(movie_url)
 
 # 任务2: 获取电影页面 HTML
-# 保存第一个html到movies.csv
-# with open('movies.csv','w') as f:
-#     for url in url_list:
-#         html = expanddouban.getHtml(url,True)
-#         f.write(html)
-#         break
+def getHtml(url):
+    html = expanddouban.getHtml(url,True)
+    return html
 
 # 任务3: 定义电影类
 # 将电影类变量添加进list
@@ -81,5 +76,8 @@ m.displayMovie()
 return a list of Movie objects with the given category and location.
 """
 def getMovies(category, location):
+    # 取得电影url
+    movie_url=getMovieUrl(category,location)
+    # 取得url对应电影页html
 
 	return []

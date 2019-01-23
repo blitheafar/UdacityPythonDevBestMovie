@@ -2,6 +2,8 @@
 import codecs
 import sys
 import expanddouban
+import json
+from bs4 import BeautifulSoup
 
 reload(sys)
 # 设置python默认编码为utf-8，防止中文写入乱码
@@ -67,17 +69,60 @@ info_link = "https://movie.douban.com/subject/1292052/"
 cover_link = "https://img3.doubanio.com/view/movie_poster_cover/lpst/public/p480747492.jpg"
 
 m = Movie(name, rate, location, category, info_link, cover_link)
-m.displayMovie()
+# m.displayMovie()
 # print(str(m).decode("string_escape"))
 
 
 # 任务4: 获得豆瓣电影的信息
+# 生成电影对象list
 """
 return a list of Movie objects with the given category and location.
 """
+movies_list=[]
 def getMovies(category, location):
     # 取得电影url
     movie_url=getMovieUrl(category,location)
     # 取得url对应电影页html
+    page_html=getHtml(movie_url)
+    # 取得html内所有电影的name,rate,info_link,cover_link
+    soup = BeautifulSoup(page_html, 'html.parser')
+    content_div = soup.find(id="app").find(class_="list-wp")
 
-	return []
+    # 遍历获取直接子元素
+    for ele in content_div.find_all("a", recursive=False):
+        # 一个电影对应一个字典对象，初始化字典对象
+        movie_dic={}
+        info_link=ele.get("href")
+
+        if ele.find("p", recursive=False):
+            ele_p=ele.find("p", recursive=False)
+            name=ele_p.find("span",class_="title").get_text()
+            rate=ele_p.find("span",class_="rate").get_text()
+
+        if ele.find(class_="cover-wp"):
+            ele_cover=ele.find(class_="cover-wp")
+            cover_link=ele_cover.find(class_="pic").find("img").get("src")
+
+        # print(name+rate+location+category+info_link+cover_link)
+        movie_dic["name"]=name
+        movie_dic["rate"]=rate
+        movie_dic["location"]=location
+        movie_dic["category"]=category
+        movie_dic["info_link"]=info_link
+        movie_dic["cover_link"]=cover_link
+
+        movies_list.append(movie_dic)
+
+	# return [name,rate,location,category,info_link,cover_link]
+    # print(name+rate+location+category+info_link+cover_link)
+
+getMovies(category_list[0],location_list[0])
+# print(movies_list)
+# 保存电影list到movies.csv
+# with open('movies.csv', 'w') as f:
+#     f.write(str(movies_list))
+
+# 保存电影字典到movies.csv
+with open('movies.csv', 'w') as f:
+    for list_item in movies_list:
+        f.write(json.dumps(list_item, encoding="UTF-8", ensure_ascii=False)+'\n')

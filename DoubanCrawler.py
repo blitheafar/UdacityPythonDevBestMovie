@@ -4,6 +4,7 @@ import sys
 import expanddouban
 import json
 from bs4 import BeautifulSoup
+import csv
 
 reload(sys)
 # 设置python默认编码为utf-8，防止中文写入乱码
@@ -12,37 +13,22 @@ sys.setdefaultencoding('utf8')
 """
 return a string corresponding to the URL of douban movie lists given category and location.
 """
-# 电影分类list
-category_list = ['剧情', '喜剧', '动作', '爱情', '科幻', '动画', '悬疑', '惊悚', '恐怖', '犯罪', '同性',
-                 '音乐', '歌舞', '传记', '历史', '战争', '西部', '奇幻', '冒险', '灾难', '武侠', '情色']
+# 最喜欢的3类电影分类list
+favorite_category_list=["剧情","喜剧","动画"]
 # 地区分类list
 location_list = ['中国大陆', '美国', '香港', '台湾', '日本', '韩国', '英国', '法国', '德国', '意大利',
                  '西班牙', '印度', '泰国', '俄罗斯', '伊朗', '加拿大', '澳大利亚', '爱尔兰', '瑞典', '巴西', '丹麦']
+
 # URL list
 url_list = []
-# 实现函数构造对应类型和地区的URL地址
-
-
 def getMovieUrl(category, location):
     url = None
     url_front = "https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影"
     url_front += ("," + category + "," + location)
-    # url_list.append(url_front)
     url = url_front
     return url
 
-
-# 保存所有URL到output.txt
-with open('output.txt', 'w') as f:
-    for category in category_list:
-        for location in location_list:
-            movie_url = getMovieUrl(category, location)
-            f.write(movie_url + '\n')
-            url_list.append(movie_url)
-
 # 任务2: 获取电影页面 HTML
-
-
 def getHtml(url):
     html = expanddouban.getHtml(url, True)
     return html
@@ -66,7 +52,6 @@ class Movie(object):
     def displayMovie(self):
         print self.name
 
-
 name = "肖申克的救赎"
 rate = 9.6
 location = "美国"
@@ -75,8 +60,6 @@ info_link = "https://movie.douban.com/subject/1292052/"
 cover_link = "https://img3.doubanio.com/view/movie_poster_cover/lpst/public/p480747492.jpg"
 
 m = Movie(name, rate, location, category, info_link, cover_link)
-# m.displayMovie()
-# print(str(m).decode("string_escape"))
 
 
 # 任务4: 获得豆瓣电影的信息
@@ -101,6 +84,8 @@ def getMovies(category, location):
         if ele.find("p", recursive=False):
             ele_p = ele.find("p", recursive=False)
             name = ele_p.find("span", class_="title").get_text()
+            # 替换name中的,
+            name=name.replace(",",".")
             rate = ele_p.find("span", class_="rate").get_text()
 
         if ele.find(class_="cover-wp"):
@@ -117,7 +102,6 @@ def getMovies(category, location):
 将列表输出到文件 movies.csv
 """
 # 最喜欢的3类电影对象保存在movies_list中
-favorite_category_list=["剧情","喜剧","动画"]
 for category_item in favorite_category_list:
     for location_item in location_list:
         getMovies(category_item,location_item)
@@ -132,3 +116,67 @@ with open('movies.csv', 'w') as f:
 统计你所选取的每个电影类别中，数量排名前三的地区有哪些，分别占此类别电影总数的百分比为多少？
 你可能需要自己把这个任务拆分成多个步骤，统计每个类别的电影个数，统计每个类别每个地区的电影个数，排序找到最大值
 """
+# 1.读取csv文件，读取电影list
+with open('movies.csv', 'r') as f:
+    reader = csv.reader(f)
+    csv_movies_list = list(reader)
+
+# 2.按电影类别分类电影list
+# 剧情类list
+plot_list=[]
+# 喜剧类list
+comedy_list=[]
+# 动画类list
+cartoon_list=[]
+
+def sortByCategory(list):
+    for movie_raw in list:
+        # 按,分割每行
+        # 去除首尾\"
+        category=movie_raw[3]
+        # print(category)
+        # print(favorite_category_list[0])
+        if category==favorite_category_list[0]:
+            plot_list.append(movie_raw)
+        elif category==favorite_category_list[1]:
+            comedy_list.append(movie_raw)
+        elif category==favorite_category_list[2]:
+            cartoon_list.append(movie_raw)
+        else:
+            print(category)
+            print("未知分类")
+
+sortByCategory(csv_movies_list)
+
+# 3.计算每个类别，每个地区的电影数量
+def countMovieNum(list):
+    # 返回字典类型
+    count_dic={}
+    # 遍历地区
+    for region in location_list:
+        # 初始化数量
+        num=0
+        for raw in list:
+            location=raw[2]
+            if region==location:
+                num+=1
+
+        count_dic[region]=num
+
+    return count_dic
+
+# 剧情类电影数量字典
+plot_count_dic=countMovieNum(plot_list)
+# 喜剧类电影数量字典
+comedy_count_dic=countMovieNum(comedy_list)
+# 动画类电影数量字典
+cartoon_count_dic=countMovieNum(cartoon_list)
+
+# print(str(plot_count_dic).decode("string_escape"))
+# print(str(comedy_count_dic).decode("string_escape"))
+# print(str(cartoon_count_dic).decode("string_escape"))
+
+# 计算每类字典中数量排名前三的地区
+def top3Num(dic):
+    # 给字典value从大到小排序
+    return sorted(dic.items(),key = lambda x:x[1],reverse = True)

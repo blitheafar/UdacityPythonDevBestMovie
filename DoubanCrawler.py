@@ -102,14 +102,14 @@ def getMovies(category, location):
 将列表输出到文件 movies.csv
 """
 # 最喜欢的3类电影对象保存在movies_list中
-for category_item in favorite_category_list:
-    for location_item in location_list:
-        getMovies(category_item,location_item)
-
-# 遍历movies_list，保存电影字典到movies.csv
-with open('movies.csv', 'w') as f:
-    for list_item in movies_list:
-        f.write(json.dumps(list_item, encoding="UTF-8", ensure_ascii=False)[1:-1] + '\n')
+# for category_item in favorite_category_list:
+#     for location_item in location_list:
+#         getMovies(category_item,location_item)
+#
+# # 遍历movies_list，保存电影字典到movies.csv
+# with open('movies.csv', 'w') as f:
+#     for list_item in movies_list:
+#         f.write(json.dumps(list_item, encoding="UTF-8", ensure_ascii=False)[1:-1] + '\n')
 
 # 任务6: 统计电影数据,结果输出文件到output.txt
 """
@@ -176,7 +176,39 @@ cartoon_count_dic=countMovieNum(cartoon_list)
 # print(str(comedy_count_dic).decode("string_escape"))
 # print(str(cartoon_count_dic).decode("string_escape"))
 
-# 计算每类字典中数量排名前三的地区
+# 4.计算每类字典中数量排名前三的地区
 def top3Num(dic):
     # 给字典value从大到小排序
-    return sorted(dic.items(),key = lambda x:x[1],reverse = True)
+    return sorted(dic.items(),key = lambda x:x[1],reverse = True)[:3]
+
+plot_top3_dic=top3Num(plot_count_dic)
+comedy_top3_dic=top3Num(comedy_count_dic)
+cartoon_top3_dic=top3Num(cartoon_count_dic)
+
+# 5.计算各类电影中的电影总数
+def sumNum(list):
+    return len(list)
+
+plot_movies_sum=sumNum(plot_list)
+comedy_movies_sum=sumNum(comedy_list)
+cartoon_movies_sum=sumNum(cartoon_list)
+
+# 6.生成每类排名前3的地区及其占此类别电影总数的百分比字典
+def percentOfLocation(top3_list,movies_sum):
+    dic={}
+    for item in top3_list:
+        float_num=float(item[1])/movies_sum
+        percentage=round(float_num,4)*100
+        location=item[0]
+        dic[location]=str(percentage)+"%"
+    return dic
+
+plot_percent_location_top3=percentOfLocation(plot_top3_dic,plot_movies_sum)
+comedy_percent_location_top3=percentOfLocation(comedy_top3_dic,comedy_movies_sum)
+cartoon_percent_location_top3=percentOfLocation(cartoon_top3_dic,cartoon_movies_sum)
+
+# 7.保存结果到output.txt
+with open('output.txt', 'w') as f:
+    f.write(favorite_category_list[0]+":"+str(plot_percent_location_top3).decode("string_escape") + '\n')
+    f.write(favorite_category_list[1]+":"+str(comedy_percent_location_top3).decode("string_escape")+'\n')
+    f.write(favorite_category_list[2]+":"+str(cartoon_percent_location_top3).decode("string_escape"))
